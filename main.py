@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, filedialog
+from tkinter import ttk, filedialog, messagebox
 import os
 import win32com.client
 import win32api
@@ -10,7 +10,6 @@ from ttkbootstrap.constants import *
 def get_printers():
     printers = win32print.EnumPrinters(win32print.PRINTER_ENUM_LOCAL)
     return [printer[2] for printer in printers]
-
 
 def print_word_docs(folder_path, printer_name):
     word = win32com.client.Dispatch("Word.Application")
@@ -35,13 +34,10 @@ def print_word_docs(folder_path, printer_name):
                     print(f"Printed Word document: {filename}")
                 except Exception as e:
                     print(f"Failed to print {filename}: {e}")
-            else:
-                print(f"File does not exist: {file_path}")
 
     # Revert to the original default printer
     win32print.SetDefaultPrinter(current_printer)
     word.Quit()
-
 
 def print_excel_files(folder_path, printer_name):
     excel = win32com.client.Dispatch("Excel.Application")
@@ -73,12 +69,40 @@ def print_pdfs(folder_path, printer_name):
 def print_all_files():
     folder_path = folder_var.get()
     printer_name = printer_var.get()
-    if os.path.isdir(folder_path):
+
+    if not folder_path:
+        messagebox.showwarning("Warning", "Please choose a folder")
+        return
+
+    if not os.path.isdir(folder_path):
+        messagebox.showerror("Error", "Invalid folder path")
+        return
+
+    success = True
+    error_messages = []
+
+    try:
         print_word_docs(folder_path, printer_name)
+    except Exception as e:
+        success = False
+        error_messages.append(f"Word documents: {e}")
+
+    try:
         print_excel_files(folder_path, printer_name)
+    except Exception as e:
+        success = False
+        error_messages.append(f"Excel files: {e}")
+
+    try:
         print_pdfs(folder_path, printer_name)
+    except Exception as e:
+        success = False
+        error_messages.append(f"PDF files: {e}")
+
+    if success:
+        messagebox.showinfo("Success", "All files printed successfully")
     else:
-        print("Invalid folder path")
+        messagebox.showerror("Error", "Failed to print some files:\n" + "\n".join(error_messages))
 
 def browse_folder():
     folder_selected = filedialog.askdirectory()
