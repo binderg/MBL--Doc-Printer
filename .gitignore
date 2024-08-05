@@ -1,0 +1,37 @@
+# Ignore virtual environment directories
+venv/
+env/
+
+# Ignore Python bytecode files
+*.pyc
+*.pyo
+__pycache__/
+
+# Ignore system-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore VS Code settings
+.vscode/
+*.code-workspace
+
+# Ignore PyCharm project files
+.idea/
+
+# Ignore compiled files
+*.so
+*.dylib
+*.dll
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# Ignore environment variables
+.env
+
+# Ignore build artifacts
+build/
+dist/
+*.egg-info/
